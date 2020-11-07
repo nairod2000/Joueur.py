@@ -36,7 +36,7 @@ class AI(BaseAI):
         """This is called once the game starts and your AI knows its player and game. You can initialize your AI here.
         """
         # <<-- Creer-Merge: start -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        # replace with your start logic
+        self.left = self.player.base_tile.x <= 2
         
         # <<-- /Creer-Merge: start -->>
 
