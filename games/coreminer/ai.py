@@ -72,8 +72,9 @@ class AI(BaseAI):
         # If we have no miners and can afford one, spawn one
         if len(self.player.miners) < 1 and self.player.money >= self.game.spawn_price:
             self.player.spawn_miner()
-        if self.game.current_turn == 40:
-            quit()
+            self.player.miners[0].buy("buildingMaterials", 10)
+        #if self.game.current_turn == 20:
+        #    quit()
         
         # For each miner
         for miner in self.player.miners:
@@ -112,10 +113,11 @@ class AI(BaseAI):
                     miner.mine(eastTile, -1)
 
             # Check to make sure east and west tiles are mined
-            if (eastTile and eastTile.ore + eastTile.dirt == 0) and (westTile and westTile.ore + westTile.dirt == 0):
+            if (eastTile and eastTile.ore == 0) and (westTile and westTile.ore == 0):
                 # Dig down
                 if miner.tile.tile_south:
                     miner.mine(miner.tile.tile_south, -1)
+                    miner.move(miner.tile.tile_south)
             
         return True
         # <<-- /Creer-Merge: runTurn -->>
