@@ -38,6 +38,9 @@ class AI(BaseAI):
         # <<-- Creer-Merge: start -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         self.left = self.player.base_tile.x <= 2
         
+        # find which side we are on
+        self.left = self.player.base_tile.x < 2
+
         # <<-- /Creer-Merge: start -->>
 
     def game_updated(self) -> None:
@@ -59,7 +62,7 @@ class AI(BaseAI):
         # <<-- /Creer-Merge: end -->>
     def run_turn(self) -> bool:
         """This is called every time it is this AI.player's turn.
-
+        
         Returns:
             bool: Represents if you want to end your turn. True means end your turn, False means to keep your turn going and re-call this function.
         """
@@ -69,11 +72,16 @@ class AI(BaseAI):
         # If we have no miners and can afford one, spawn one
         if len(self.player.miners) < 1 and self.player.money >= self.game.spawn_price:
             self.player.spawn_miner()
-
+        if self.game.current_turn == 40:
+            quit()
+        
         # For each miner
         for miner in self.player.miners:
             if not miner or not miner.tile:
                 continue
+            if not miner.tile.is_ladder:
+                miner.buy("buildingMaterials", 5)
+                miner.build(miner.tile, "ladder")
 
             # Move to tile next to base
             if miner.tile.is_base:
@@ -95,12 +103,12 @@ class AI(BaseAI):
             if eastTile.x == self.player.base_tile.x:
                 if eastTile:
                     miner.mine(eastTile, -1)
-                if westTile:
+                if westTile.ore > 0:
                     miner.mine(westTile, -1)
             else:
                 if westTile:
                     miner.mine(westTile, -1)
-                if eastTile:
+                if eastTile.ore > 0:
                     miner.mine(eastTile, -1)
 
             # Check to make sure east and west tiles are mined
