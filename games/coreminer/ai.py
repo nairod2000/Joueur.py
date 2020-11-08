@@ -36,8 +36,7 @@ class AI(BaseAI):
         """This is called once the game starts and your AI knows its player and game. You can initialize your AI here.
         """
         # <<-- Creer-Merge: start -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        self.left = self.player.base_tile.x <= 2
-        
+
         # find which side we are on
         self.left = self.player.base_tile.x < 2
 
@@ -73,16 +72,19 @@ class AI(BaseAI):
         if len(self.player.miners) < 1 and self.player.money >= self.game.spawn_price:
             self.player.spawn_miner()
             self.player.miners[0].buy("buildingMaterials", 10)
-        #if self.game.current_turn == 20:
+        #upgrade miner
+        if self.player.money > 20:
+            self.player.miners[0].upgrade()
+        #if self.game.current_turn == 200:
         #    quit()
         
         # For each miner
         for miner in self.player.miners:
             if not miner or not miner.tile:
                 continue
-            if not miner.tile.is_ladder:
+            if miner.tile.y > 1 and not miner.tile.tile_north.is_ladder:
                 miner.buy("buildingMaterials", 5)
-                miner.build(miner.tile, "ladder")
+                miner.build(miner.tile.tile_north, "ladder")
 
             # Move to tile next to base
             if miner.tile.is_base:
@@ -117,8 +119,22 @@ class AI(BaseAI):
                 # Dig down
                 if miner.tile.tile_south:
                     miner.mine(miner.tile.tile_south, -1)
-                    miner.move(miner.tile.tile_south)
-            
+                    #miner.move(miner.tile.tile_south)
+                # move in
+                else:
+                    if self.left:
+                        miner.mine(eastTile, -1)
+                        miner.buy("buildingMaterials", 5)
+                        miner.build(eastTile, "support")
+                        if (eastTile.ore + eastTile.dirt == 0):
+                            miner.move(eastTile)
+                    else:
+                        miner.mine(westTile, -1)
+                        miner.buy("buildingMaterials", 5)
+                        miner.build(westTile, "support")
+                        if (westTile.ore + westTile.dirt == 0):
+                            miner.move(westTile)
+
         return True
         # <<-- /Creer-Merge: runTurn -->>
 
